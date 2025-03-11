@@ -1,7 +1,7 @@
 from Assets.scripts.settings import *
 from Assets.scripts.classes.playerClass import Player
 from Assets.scripts.classes.spriteGroups import AllSprites
-from Assets.scripts.classes.baseSprite import BaseSprite,invisObj ,Entity
+from Assets.scripts.classes.baseSprite import BaseSprite,invisObj ,Entity,TransportDoor
 from pytmx.util_pygame import load_pygame
 from Assets.scripts.classes.bulletClass import Bullet
 from Assets.scripts.classes.enemiesClass import Coffin,Cactus
@@ -16,12 +16,14 @@ class Game(object):
         self.clock = pg.time.Clock()
         self.players = pg.sprite.Group()
         self.all_sprites = AllSprites()
+        self.spritesBelowPlayer = pg.sprite.Group()
         self.solidObjects = pg.sprite.Group()
         self.enities = pg.sprite.Group()
         self.enemies = pg.sprite.Group()
         self.cactusGroup = pg.sprite.Group()
         self.coffinGroup = pg.sprite.Group()
         self.bulletsGroup = pg.sprite.Group()
+        self.transports = pg.sprite.Group()
         self.doors = pg.sprite.Group()
         self.mapSprites = pg.sprite.Group()
 
@@ -36,6 +38,9 @@ class Game(object):
         self.keys = pg.sprite.Group()
         self.keySpawed = False
         self.onkey = False
+        self.trapDoorHit = False
+
+        self.interactText:str = ''
 
         self.curPlayerSpawn = vec()
         self.gameSetup()
@@ -55,6 +60,12 @@ class Game(object):
                     if self.keySpawed and self.onkey:
                         self.key.kill()
                         self.player.invetory['key'] = 1 
+                    elif self.trapDoorHit and not self.trapDoor.isOpen:
+                        self.trapDoor.openDoor()
+                    elif self.trapDoor.isOpen and self.trapDoorHit:
+                        self.goto = self.trapDoor.goto
+                        self.fromScene = self.trapDoor.fromScene
+                        self.loadMap(int(self.goto))
 
     def update(self):
         self.dt = self.clock.tick(FPS)/1000
@@ -63,14 +74,10 @@ class Game(object):
         #Bullet collisions
         self.checkBulletCol()
         
+        self.checkTransportCol()
 
 
-        boundsHit = pg.sprite.groupcollide(self.doors,self.players,False,False) # Coll between player and doors
-        if boundsHit:
-            for hit in boundsHit:
-                self.goto = hit.goto
-                self.fromScene = hit.fromScene
-                self.loadMap(int(self.goto))   
+           
 
         if not self.keySpawed:
             self.checkEnemiesDead()   
@@ -86,7 +93,7 @@ class Game(object):
         
     def draw(self):
         self.window.fill(black)
-        self.all_sprites.customDraw(self.player)
+        self.all_sprites.customDraw(self.player,self.spritesBelowPlayer)
        
         self.DrawBarHoriz(self.window,(25,50),self.player.curHP,250,red,"HP")
         self.drawDataImg((25,90),self.bulletImgMini,self.player.ammo)
@@ -94,8 +101,14 @@ class Game(object):
         if self.player.ammo == 0:
             draw_text(self.window,'Press R to reload',30,center_x,center_x)
         if self.onkey:
-            draw_text(self.window,'Press E to pickup',30,center_x,center_y+60)
-
+            self.interactText = 'Press E to pickup'
+        elif self.trapDoorHit and not self.trapDoor.isOpen:
+            self.interactText = 'Press E to open'
+        elif self.trapDoorHit and self.trapDoor.isOpen:
+            self.interactText = 'Press E to enter'
+        else:
+            self.interactText = ''
+        draw_text(self.window,self.interactText,30,center_x,center_y+60)
         pg.display.flip()
 
     def loadData(self):
@@ -126,8 +139,14 @@ class Game(object):
         self.coffinGroup.empty()  
         self.bulletsGroup.empty() 
         self.mapSprites.empty()  
+        self.transports.empty()
+        self.doors.empty()
+        self.spritesBelowPlayer.empty()
 
     def loadMap(self,mapInt):
+        self.window.fill(black)
+        draw_text(self.window, 'Loading. . .', 150, WIDTH / 2, HEIGHT / 4,  green, "impact")
+        pg.display.flip()
         self.clearGroups()
         pg.mixer.music.load(self.musicPaths[int(self.goto)])
         pg.mixer.music.play(-1)
@@ -142,8 +161,11 @@ class Game(object):
                     Coffin((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["coffin"],self)
                 if Ent.name == "Cactus":
                     Cactus((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["cactus"],self)
-                if Ent.name == 'Hole':
-                    invisObj(Ent.x,Ent.y,Ent.width,Ent.height,(self.mapSprites,self.solidObjects,self.doors),self,Ent.goto,Ent.fromScene)
+                if Ent.name == 'TrapDoor':
+                    surf1 = pg.transform.scale(Ent.image,(Ent.width,Ent.height))
+                    surf2 = pg.image.load(os.path.join(PATHS['tilesets'],Ent.img2))
+                    surf2 = pg.transform.scale(surf2,(Ent.width,Ent.height))
+                    self.trapDoor = TransportDoor((Ent.x,Ent.y),surf1,surf2,(self.all_sprites,self.mapSprites,self.spritesBelowPlayer,self.doors,self.transports),Ent.name)#BaseSprite((Ent.x,Ent.y),surf1,(self.all_sprites,self.mapSprites,self.doors))
                 if Ent.name == "Wall" or Ent.name == 'HB':
                     invisObj(Ent.x,Ent.y,Ent.width,Ent.height,(self.mapSprites,self.solidObjects),self)
                 if Ent.name == "Player":
@@ -198,10 +220,6 @@ class Game(object):
         else:
             print("Error No Map "+mapInt)
 
-        
-        
-
-    
     def spawnPlayer(self):
         self.player = Player((self.curPlayerSpawn.x,self.curPlayerSpawn.y),(self.players,self.all_sprites),os.path.join(spritesDir,"player"),self,debug=True) 
 
@@ -222,6 +240,17 @@ class Game(object):
         if playerHits:
             self.player.takeDamage(random.randint(10,15))
     
+    def checkTransportCol(self):
+        boundsHit = pg.sprite.groupcollide(self.transports,self.players,False,False) # Coll between player and transports
+        if boundsHit:
+            for hit in boundsHit:
+                if hit.name == 'TrapDoor':
+                    self.trapDoorHit = True
+                else:
+                    self.trapDoorHit = False
+        else:
+            self.interactText = ''
+            self.trapDoorHit = False
 
     def reSpawnPlayer(self):
         self.player.pos = self.curPlayerSpawn

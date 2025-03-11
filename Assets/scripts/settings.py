@@ -53,6 +53,7 @@ PATHS ={"game":gameDir,
         "coffin":os.path.join(spritesDir,"monster\coffin"),
         "cactus":os.path.join(spritesDir,"monster\cactus"),
         "bullet":os.path.join(spritesDir,"bullet"),
+        'tilesets':os.path.join(spritesDir,'tilesets'),
         "other":os.path.join(spritesDir,"other")}
 
 

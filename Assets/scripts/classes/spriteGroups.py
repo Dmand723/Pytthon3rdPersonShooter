@@ -12,12 +12,27 @@ class AllSprites(pg.sprite.Group):
         self.displaySuface = pg.display.get_surface()
         self.bg = pg.image.load(os.path.join(PATHS["other"], "bg.png")).convert()
 
-    def customDraw(self,player):
-        self.offset.x = player.rect.centerx - WIDTH/2
-        self.offset.y = player.rect.centery - HEIGHT/2
+    def customDraw(self, player, spritesBelow):
+        self.offset.x = player.rect.centerx - WIDTH / 2
+        self.offset.y = player.rect.centery - HEIGHT / 2
 
-        self.displaySuface.blit(self.bg,-self.offset)
-        for sprite in (sorted(self.sprites(),key=lambda sprite: sprite.rect.centery)):
-            offsetRect = sprite.image.get_rect(center = sprite.rect.center)
-            offsetRect.center -= self.offset
-            self.displaySuface.blit(sprite.image,offsetRect)
+        self.displaySuface.blit(self.bg, -self.offset)
+        for sprite in spritesBelow:
+            sprite_offsetRect = sprite.image.get_rect(center=sprite.rect.center)
+            sprite_offsetRect.center -= self.offset
+            self.displaySuface.blit(sprite.image, sprite_offsetRect)
+        
+        # Draw the player 
+        player_offsetRect = player.image.get_rect(center=player.rect.center)
+        player_offsetRect.center -= self.offset
+        self.displaySuface.blit(player.image, player_offsetRect)
+
+        
+        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
+            if not sprite in spritesBelow:
+                offsetRect = sprite.image.get_rect(center=sprite.rect.center)
+                offsetRect.center -= self.offset
+                self.displaySuface.blit(sprite.image, offsetRect)
+        
+        
+        

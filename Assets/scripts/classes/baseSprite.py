@@ -10,6 +10,20 @@ class BaseSprite(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = pos)
         self.hitBox = self.rect.inflate(0,-self.rect.height/3)
 
+class TransportDoor(BaseSprite):
+    def __init__(self, pos, mainImg,openImg, groups,name,goto:str = '1',fromScene:str = '0',isOpen:bool = False):
+        super().__init__(pos, mainImg, groups)
+        '''If the door is already open by default set the openImg to the same as mainImg'''
+        self.goto = goto
+        self.fromScene = fromScene
+        self.isOpen = isOpen
+        self.openImg = openImg
+        self.name = name
+        
+    def openDoor(self):
+        #open the door
+        self.isOpen = True
+        self.image = self.openImg
 
 class invisObj(pg.sprite.Sprite):
     def __init__(self,x,y,w,h, groups,game,goto ="",fromScene="",debug:bool = False):

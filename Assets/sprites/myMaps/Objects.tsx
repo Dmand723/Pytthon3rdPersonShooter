@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.2" name="Objects" tilewidth="800" tileheight="628" tilecount="19" columns="0">
+<tileset version="1.10" tiledversion="1.10.2" name="Objects" tilewidth="800" tileheight="628" tilecount="21" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="3">
   <image width="64" height="56" source="../objects/rock_3.png"/>
@@ -57,5 +57,11 @@
  </tile>
  <tile id="21">
   <image width="104" height="64" source="../objects/rock_2.png"/>
+ </tile>
+ <tile id="25">
+  <image width="24" height="24" source="../tilesets/trapOpen.png"/>
+ </tile>
+ <tile id="26">
+  <image width="24" height="24" source="../tilesets/trapClosed.png"/>
  </tile>
 </tileset>
