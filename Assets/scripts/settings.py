@@ -26,6 +26,8 @@ SWIDTH = 800
 SHEIGHT = 1000
 WIDTH , HEIGHT= pyautogui.size()
 TITLE = "PewPew"
+center_x = WIDTH // 2
+center_y = HEIGHT // 2
 
 FPS = 60
 tileCount = (16, 16)

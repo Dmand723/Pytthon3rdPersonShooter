@@ -69,6 +69,7 @@ class BadBoy():
             pg.draw.rect(self.image,black,self.outline,3)
     
     def die(self):
+        self.game
         self.kill()
 
 

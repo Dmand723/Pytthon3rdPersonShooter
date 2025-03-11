@@ -1,7 +1,7 @@
 from Assets.scripts.settings import *
 from Assets.scripts.classes.playerClass import Player
 from Assets.scripts.classes.spriteGroups import AllSprites
-from Assets.scripts.classes.baseSprite import BaseSprite,invisObj 
+from Assets.scripts.classes.baseSprite import BaseSprite,invisObj ,Entity
 from pytmx.util_pygame import load_pygame
 from Assets.scripts.classes.bulletClass import Bullet
 from Assets.scripts.classes.enemiesClass import Coffin,Cactus
@@ -25,12 +25,17 @@ class Game(object):
         self.doors = pg.sprite.Group()
         self.mapSprites = pg.sprite.Group()
 
+        self.lastEnemyPos = vec()
+
         self.goto = "0"
         self.fromScene = "start"
         self.levelPaths = ['Assets/sprites/myMaps/map.tmx',"Assets/sprites/myMaps/map2.tmx"]    
         
         self.musicPaths = ['Assets/sound/music.mp3','Assets/sound/music.mp3']
         
+        self.keys = pg.sprite.Group()
+        self.keySpawed = False
+        self.onkey = False
 
         self.curPlayerSpawn = vec()
         self.gameSetup()
@@ -46,30 +51,18 @@ class Game(object):
                 if event.key == pg.K_ESCAPE:
                     pg.mixer.music.stop()
                     self.is_playing = False
+                elif event.key == pg.K_e:
+                    if self.keySpawed and self.onkey:
+                        self.key.kill()
+                        self.player.invetory['key'] = 1 
 
     def update(self):
         self.dt = self.clock.tick(FPS)/1000
         self.all_sprites.update(self.dt)
 
         #Bullet collisions
-        pg.sprite.groupcollide(self.bulletsGroup,self.solidObjects,True,False) #Coll between bullets and solid objects
-        hits2 = pg.sprite.groupcollide(self.bulletsGroup,self.enemies,False,False,pg.sprite.collide_mask)#Coll between enimies and bullets
-        hits = pg.sprite.groupcollide(self.enemies,self.bulletsGroup,False,True,pg.sprite.collide_mask) # Coll between bullets and enemies 
-       
-        if hits2:
-            for bullet in hits2:
-                if hits:
-                    for hit in hits:
-
-                        hit.takeDamage(random.randint(10,25))
-                        hit.target = bullet.owner
-                      
-
-                        
-                    
-        playerHits = pg.sprite.groupcollide(self.players,self.bulletsGroup,False,True,pg.sprite.collide_mask)#Coll between players and bullets
-        if playerHits:
-            self.player.takeDamage(random.randint(10,15))  
+        self.checkBulletCol()
+        
 
 
         boundsHit = pg.sprite.groupcollide(self.doors,self.players,False,False) # Coll between player and doors
@@ -77,7 +70,19 @@ class Game(object):
             for hit in boundsHit:
                 self.goto = hit.goto
                 self.fromScene = hit.fromScene
-                self.loadMap(int(self.goto))      
+                self.loadMap(int(self.goto))   
+
+        if not self.keySpawed:
+            self.checkEnemiesDead()   
+        elif self.keySpawed:
+            self.key.animate(self.dt)
+            keyHit = pg.sprite.groupcollide(self.keys,self.players,False,False)
+            if keyHit:
+                
+                self.onkey = True
+            else:
+                self.onkey = False
+
         
     def draw(self):
         self.window.fill(black)
@@ -85,8 +90,12 @@ class Game(object):
        
         self.DrawBarHoriz(self.window,(25,50),self.player.curHP,250,red,"HP")
         self.drawDataImg((25,90),self.bulletImgMini,self.player.ammo)
-        
-        
+
+        if self.player.ammo == 0:
+            draw_text(self.window,'Press R to reload',30,center_x,center_x)
+        if self.onkey:
+            draw_text(self.window,'Press E to pickup',30,center_x,center_y+60)
+
         pg.display.flip()
 
     def loadData(self):
@@ -135,7 +144,7 @@ class Game(object):
                     Cactus((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["cactus"],self)
                 if Ent.name == 'Hole':
                     invisObj(Ent.x,Ent.y,Ent.width,Ent.height,(self.mapSprites,self.solidObjects,self.doors),self,Ent.goto,Ent.fromScene)
-                if Ent.name == "Wall":
+                if Ent.name == "Wall" or Ent.name == 'HB':
                     invisObj(Ent.x,Ent.y,Ent.width,Ent.height,(self.mapSprites,self.solidObjects),self)
                 if Ent.name == "Player":
                     if Ent.fromScene == self.fromScene:
@@ -194,9 +203,24 @@ class Game(object):
 
     
     def spawnPlayer(self):
-        self.player = Player((self.curPlayerSpawn.x,self.curPlayerSpawn.y),(self.players,self.all_sprites),os.path.join(spritesDir,"player"),self) 
+        self.player = Player((self.curPlayerSpawn.x,self.curPlayerSpawn.y),(self.players,self.all_sprites),os.path.join(spritesDir,"player"),self,debug=True) 
 
+    def checkBulletCol(self):
+        pg.sprite.groupcollide(self.bulletsGroup,self.solidObjects,True,False) #Coll between bullets and solid objects
+        hits2 = pg.sprite.groupcollide(self.bulletsGroup,self.enemies,False,False,pg.sprite.collide_mask)#Coll between enimies and bullets
+        hits = pg.sprite.groupcollide(self.enemies,self.bulletsGroup,False,True,pg.sprite.collide_mask) # Coll between bullets and enemies 
+       
+        if hits2:
+            for bullet in hits2:
+                if hits:
+                    for hit in hits:
 
+                        hit.takeDamage(random.randint(10,25))
+                        hit.target = bullet.owner
+                    
+        playerHits = pg.sprite.groupcollide(self.players,self.bulletsGroup,False,True,pg.sprite.collide_mask)#Coll between players and bullets
+        if playerHits:
+            self.player.takeDamage(random.randint(10,15))
     
 
     def reSpawnPlayer(self):
@@ -207,6 +231,16 @@ class Game(object):
     def spawnBullet(self,pos,dir,owner):
         Bullet(pos,dir,self.bulletSurf,(self.all_sprites,self.bulletsGroup),owner)
 
+    def checkEnemiesDead(self):
+        if len(self.enemies) == 0:
+            self.spawnKey()
+            self.keySpawed = True
+
+    def spawnKey(self):
+        key_position = self.lastEnemyPos
+        key_path = PATHS['sprites']+'/keys/key1'  # Load your key image
+        self.key = Entity(key_position, (self.all_sprites,self.keys), key_path,self,status='idle',scale=2) # Add the key to the appropriate groups
+        
     def DrawBarHoriz(self,surf,pos,value,length,fillColor,tag="",hasTag = True):
         value = value
         if value < 0:
@@ -226,7 +260,7 @@ class Game(object):
         pg.draw.rect(surf,black,outlineRect,3)
         if hasTag:
             draw_text(surf,tag,BarHeight,(pos[0]*2),(pos[1]-(BarHeight+5)),black)
-            draw_text(surf,str(value)+" / 100", int(BarHeight),pos[0]+70,pos[1]-3)
+            draw_text(surf,str(value)+" / 100", int(BarHeight),pos[0]+70,pos[1]+4)
 
     def drawBarVert(self,surf,pos,value,height,fillColor,tag="",hasTag = True):
         value = value

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="80" tilewidth="64" tileheight="64" infinite="0" nextlayerid="13" nextobjectid="182">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="80" tilewidth="64" tileheight="64" infinite="0" nextlayerid="13" nextobjectid="210">
  <tileset firstgid="1" source="groundTiles.tsx"/>
  <tileset firstgid="249" source="fenceTiles.tsx"/>
  <tileset firstgid="393" source="Objects.tsx"/>
@@ -510,5 +510,32 @@
   <object id="176" name="Wall" x="1046" y="408" width="181" height="133"/>
   <object id="177" name="Wall" x="1486" y="409" width="128" height="193"/>
   <object id="180" name="Wall" x="1617" y="407" width="189" height="134"/>
+  <object id="182" name="HB" x="1019.83" y="972.166" width="140.333" height="115.667"/>
+  <object id="183" name="HB" x="1083.83" y="2064.17" width="140.333" height="115.667"/>
+  <object id="184" name="HB" x="955.834" y="1800.17" width="140.333" height="115.667"/>
+  <object id="185" name="HB" x="1525.83" y="2116.17" width="140.333" height="115.667"/>
+  <object id="186" name="HB" x="453.834" y="1046.17" width="64.333" height="115.667"/>
+  <object id="187" name="HB" x="701.834" y="450.166" width="140.333" height="115.667"/>
+  <object id="188" name="HB" x="585.834" y="1278.17" width="578.333" height="197.667"/>
+  <object id="189" name="HB" x="979.167" y="2882.17" width="572.333" height="199.667"/>
+  <object id="190" name="HB" x="1020.5" y="2692.83" width="128.333" height="99.667"/>
+  <object id="191" name="HB" x="2044.5" y="3086.17" width="128.333" height="115.667"/>
+  <object id="192" name="HB" x="2432.5" y="2702.17" width="127" height="115.667"/>
+  <object id="193" name="HB" x="2815.17" y="3023.5" width="128.333" height="115.667"/>
+  <object id="194" name="HB" x="3260.5" y="2560.83" width="128.333" height="127.667"/>
+  <object id="195" name="HB" x="2035.89" y="1411.86" width="140.333" height="115.667"/>
+  <object id="196" name="HB" x="2113.71" y="1100.11" width="128.333" height="115.667"/>
+  <object id="197" name="HB" x="2115.17" y="660.833" width="129.666" height="106.334"/>
+  <object id="198" name="HB" x="2299.17" y="394.166" width="140.333" height="115.667"/>
+  <object id="199" name="HB" x="2440.5" y="496.833" width="567" height="378.334"/>
+  <object id="200" name="HB" x="2693.83" y="848.833" width="321.666" height="107.667"/>
+  <object id="201" name="HB" x="2437.83" y="872.166" width="123" height="86.334"/>
+  <object id="203" name="HB" x="2693.83" y="1448.83" width="164.333" height="123.667"/>
+  <object id="204" name="HB" x="2967.17" y="1464.83" width="103" height="110.334"/>
+  <object id="205" name="HB" x="2693.83" y="1270.17" width="379" height="215.667"/>
+  <object id="206" name="HB" x="3071.17" y="1683.5" width="129.666" height="107.667"/>
+  <object id="207" name="HB" x="3331.17" y="1879.5" width="129.666" height="107.667"/>
+  <object id="208" name="HB" x="2368.5" y="2068.83" width="126.999" height="105"/>
+  <object id="209" name="HB" x="2367.17" y="1730.17" width="101.666" height="62.3337"/>
  </objectgroup>
 </map>

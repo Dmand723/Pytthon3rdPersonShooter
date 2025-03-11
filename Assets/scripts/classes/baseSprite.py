@@ -12,7 +12,7 @@ class BaseSprite(pg.sprite.Sprite):
 
 
 class invisObj(pg.sprite.Sprite):
-    def __init__(self,x,y,w,h, groups,game,goto ="",fromScene=""):
+    def __init__(self,x,y,w,h, groups,game,goto ="",fromScene="",debug:bool = False):
         super().__init__(groups)
         self.game = game
         self.rect = pg.Rect(x,y,w,h)
@@ -24,17 +24,22 @@ class invisObj(pg.sprite.Sprite):
         self.goto = goto
         self.fromScene = fromScene
 
+        if debug:
+            self.image = pg.Surface((w, h))
+            self.image.fill((0, 0, 255))  
+
 class Entity(pg.sprite.Sprite):
-    def __init__(self, pos,groups,imgPath,game):
+    def __init__(self, pos,groups,imgPath,game,debug:bool = False,status:str = 'down_idle',scale:int = 1):
         super(Entity,self).__init__(groups)
         self.game = game
+        self.scale = scale
         self.importAssets(imgPath)
-        self.status = "down_idle"
+        self.status = status
         self.frameIndex = 0
         self.image = self.animaions[self.status][self.frameIndex]
         self.rect = self.image.get_rect()
         self.rect.center = pos
-
+        self.debug = debug
         #movement
         self.pos = vec(self.rect.center)
         self.dir = vec()
@@ -70,6 +75,8 @@ class Entity(pg.sprite.Sprite):
 
     def checkHealth(self):
         if self.curHP <=0:
+            if len(self.game.enemies) ==1:
+                self.game.lastEnemyPos = self.pos 
             self.die()
         
 
@@ -84,6 +91,7 @@ class Entity(pg.sprite.Sprite):
                 for filename in sorted(folder[2],key = lambda string: int(string.split(".")[0])):
                     path = folder[0].replace("\\","/")+"/"+filename
                     surf =pg.image.load(path).convert_alpha()
+                    surf = pg.transform.scale(surf, (surf.get_width() * self.scale, surf.get_height() * self.scale))
                     key = path.split("/")[-2]
                     self.animaions[key].append(surf)
     
@@ -92,7 +100,6 @@ class Entity(pg.sprite.Sprite):
         
         for sprite in self.game.solidObjects.sprites():
             if sprite.hitBox.colliderect(self.hitbox):
-                print("raaaa")
                 if dir == "horizontal":
                     if self.dir.x > 0:#Player is moving right
                         self.hitbox.right = sprite.hitBox.left
@@ -143,7 +150,6 @@ class Entity(pg.sprite.Sprite):
             self.frameIndex = 0
         self.image = curAnitmation[int(self.frameIndex)]
         self.mask = pg.mask.from_surface(self.image)
-    
     
     def flash(self,color= white):
         if not self.canBeOuch:

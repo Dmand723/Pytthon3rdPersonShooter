@@ -3,15 +3,26 @@ from Assets.scripts.classes.baseSprite import Entity
 
 
 class Player(Entity):
-    def __init__(self,pos,groups,imgPath,game):
-        super(Player,self).__init__(pos,groups,imgPath,game)
+    def __init__(self,pos,groups,imgPath,game,debug:bool = False,):
+        super(Player,self).__init__(pos,groups,imgPath,game,debug)
 
         # attack
         self.bulletDir = vec(1,0)
         self.didShoot = False
-        self.speed = 250
+
+        self.normalSpeed = 250
+        self.sprintSpeed = 300
+
+        self.curSpeed = self.normalSpeed
         self.maxAmmo = 6
         self.ammo = self.maxAmmo
+
+        self.invetory:dict
+
+        
+
+        self.stanima = 100
+        self.sprinting = False
 
         #debug 
         self.godmode = False
@@ -35,7 +46,7 @@ class Player(Entity):
         if self.attacking:
             self.status = self.status.split("_")[0]+"_attack"
     
-    
+        
                 
     def getInputs(self):
         keys = pg.key.get_pressed()
@@ -86,6 +97,9 @@ class Player(Entity):
 
         #====================================================
     
+   
+        
+
     def reaload(self):
         self.ammo = self.maxAmmo
 
@@ -100,7 +114,7 @@ class Player(Entity):
         self.checkHealth()
         if self.godmode and self.curHP < self.maxHP:
             self.curHP = self.maxHP
-
+        
     def die(self):
         self.game.clearGroups()
         self.kill()
