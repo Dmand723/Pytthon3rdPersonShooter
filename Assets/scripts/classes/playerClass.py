@@ -17,7 +17,7 @@ class Player(Entity):
         self.maxAmmo = 6
         self.ammo = self.maxAmmo
 
-        self.invetory:dict
+        self.invetory = {}
 
         
 

@@ -61,7 +61,14 @@ class Game(object):
                         self.key.kill()
                         self.player.invetory['key'] = 1 
                     elif self.trapDoorHit and not self.trapDoor.isOpen:
-                        self.trapDoor.openDoor()
+                        try: 
+                            if self.player.invetory['key'] >0:
+                                self.trapDoor.openDoor()
+                            else:
+                                self.interactText = 'Missing key'
+                        except KeyError:
+                            self.interactText = 'Missing key'
+
                     elif self.trapDoor.isOpen and self.trapDoorHit:
                         self.goto = self.trapDoor.goto
                         self.fromScene = self.trapDoor.fromScene
@@ -103,7 +110,8 @@ class Game(object):
         if self.onkey:
             self.interactText = 'Press E to pickup'
         elif self.trapDoorHit and not self.trapDoor.isOpen:
-            self.interactText = 'Press E to open'
+            if self.interactText != 'Missing key':
+                self.interactText = 'Press E to open'
         elif self.trapDoorHit and self.trapDoor.isOpen:
             self.interactText = 'Press E to enter'
         else:
@@ -233,7 +241,7 @@ class Game(object):
                 if hits:
                     for hit in hits:
 
-                        hit.takeDamage(random.randint(10,25))
+                        hit.takeDamage(101)#change this back to  random.randint(10,25)
                         hit.target = bullet.owner
                     
         playerHits = pg.sprite.groupcollide(self.players,self.bulletsGroup,False,True,pg.sprite.collide_mask)#Coll between players and bullets
