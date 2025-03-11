@@ -682,7 +682,7 @@
   <object id="207" name="HB" x="4611.17" y="3159.5" width="129.666" height="107.667"/>
   <object id="208" name="HB" x="3648.5" y="3348.83" width="126.999" height="105"/>
   <object id="209" name="HB" x="3647.17" y="3010.17" width="101.666" height="62.3337"/>
-  <object id="281" name="TrapDoor" gid="419" x="1457.17" y="3662.17" width="94" height="94">
+  <object id="281" name="TrapDoor" gid="419" x="1456.17" y="3662.17" width="94" height="94">
    <properties>
     <property name="fromScene" value="0"/>
     <property name="goto" value="1"/>

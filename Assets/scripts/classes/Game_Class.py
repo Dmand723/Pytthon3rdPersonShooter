@@ -36,13 +36,14 @@ class Game(object):
         self.musicPaths = ['Assets/sound/music.mp3','Assets/sound/music.mp3']
         
         self.keys = pg.sprite.Group()
-        self.keySpawed = False
+        
         self.onkey = False
         self.trapDoorHit = False
 
         self.interactText:str = ''
 
         self.curPlayerSpawn = vec()
+        self.player = None
         self.gameSetup()
 
     def get_events(self):
@@ -64,6 +65,7 @@ class Game(object):
                         try: 
                             if self.player.invetory['key'] >0:
                                 self.trapDoor.openDoor()
+                                self.player.invetory['key'] -=1
                             else:
                                 self.interactText = 'Missing key'
                         except KeyError:
@@ -178,25 +180,40 @@ class Game(object):
                     invisObj(Ent.x,Ent.y,Ent.width,Ent.height,(self.mapSprites,self.solidObjects),self)
                 if Ent.name == "Player":
                     if Ent.fromScene == self.fromScene:
-                        self.curPlayerSpawn = vec(Ent.x,Ent.y)
-                        self.spawnPlayer()
+                        if self.player:
+                            self.curPlayerSpawn = vec(Ent.x,Ent.y)
+                            self.reSpawnPlayer()
+                        else:
+                            self.curPlayerSpawn = vec(Ent.x,Ent.y)
+                            self.spawnPlayer()
                
 
         elif mapInt == 1:
             self.all_sprites.bg = self.bg = pg.image.load(os.path.join(PATHS["other"], "bg2.png")).convert()
             for x,y,surf in self.tmx_map2_data.get_layer_by_name("Bounds").tiles():
-                bound = BaseSprite((x*TILE_SIZE,y*TILE_SIZE),surf,(self.all_sprites,self.solidObjects,self.mapSprites))
+                BaseSprite((x*TILE_SIZE,y*TILE_SIZE),surf,(self.all_sprites,self.mapSprites))
             for obj in self.tmx_map2_data.get_layer_by_name("Objects"):
                 BaseSprite((obj.x,obj.y),obj.image,(self.all_sprites,self.mapSprites))
-            for Ent in  self.tmx_map2_data.get_layer_by_name("Entities"):
+            for Ent in  self.tmx_map2_data.get_layer_by_name("Entities"): 
                 if Ent.name == "Coffin":
                     Coffin((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["coffin"],self)
                 if Ent.name == "Cactus":
                     Cactus((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["cactus"],self)
+                if Ent.name == 'TrapDoor':
+                    surf1 = pg.transform.scale(Ent.image,(Ent.width,Ent.height))
+                    surf2 = pg.image.load(os.path.join(PATHS['tilesets'],Ent.img2))
+                    surf2 = pg.transform.scale(surf2,(Ent.width,Ent.height))
+                    self.trapDoor = TransportDoor((Ent.x,Ent.y),surf1,surf2,(self.all_sprites,self.mapSprites,self.spritesBelowPlayer,self.doors,self.transports),Ent.name)#BaseSprite((Ent.x,Ent.y),surf1,(self.all_sprites,self.mapSprites,self.doors))
+                if Ent.name == "Wall" or Ent.name == 'HB':
+                    invisObj(Ent.x,Ent.y,Ent.width,Ent.height,(self.mapSprites,self.solidObjects),self)
                 if Ent.name == "Player":
                     if Ent.fromScene == self.fromScene:
-                        self.curPlayerSpawn = vec(Ent.x,Ent.y)
-                        self.spawnPlayer()
+                        if self.player:
+                            self.curPlayerSpawn = vec(Ent.x,Ent.y)
+                            self.reSpawnPlayer()
+                        else:
+                            self.curPlayerSpawn = vec(Ent.x,Ent.y)
+                            self.spawnPlayer()
                
         # elif mapInt == 2: 
         #     for x,y,surf in self.tmx_map3_data.get_layer_by_name("Bounds").tiles():
@@ -227,6 +244,8 @@ class Game(object):
 
         else:
             print("Error No Map "+mapInt)
+        
+        self.keySpawed = False
 
     def spawnPlayer(self):
         self.player = Player((self.curPlayerSpawn.x,self.curPlayerSpawn.y),(self.players,self.all_sprites),os.path.join(spritesDir,"player"),self,debug=True) 
@@ -263,6 +282,7 @@ class Game(object):
     def reSpawnPlayer(self):
         self.player.pos = self.curPlayerSpawn
         self.all_sprites.add(self.player)
+        self.players.add(self.player)
         
 
     def spawnBullet(self,pos,dir,owner):
