@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="64" tileheight="64" infinite="0" nextlayerid="14" nextobjectid="282">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="64" tileheight="64" infinite="0" nextlayerid="14" nextobjectid="283">
  <tileset firstgid="1" source="groundTiles.tsx"/>
  <tileset firstgid="249" source="fenceTiles.tsx"/>
  <tileset firstgid="393" source="Objects.tsx"/>
@@ -580,7 +580,7 @@
   <object id="96" name="Cactus" x="3419.39" y="3231.52">
    <point/>
   </object>
-  <object id="98" name="Cactus" x="3186.06" y="2083.03">
+  <object id="98" name="WitchDoc" x="2782.06" y="3079.03">
    <point/>
   </object>
   <object id="99" name="Cactus" x="3076.97" y="3804.24">
@@ -688,6 +688,9 @@
     <property name="goto" value="1"/>
     <property name="img2" value="trapOpen.png"/>
    </properties>
+  </object>
+  <object id="282" name="Cactus" x="3152" y="2024">
+   <point/>
   </object>
  </objectgroup>
 </map>

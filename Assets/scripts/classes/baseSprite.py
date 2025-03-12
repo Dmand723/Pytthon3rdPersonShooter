@@ -60,7 +60,7 @@ class Entity(pg.sprite.Sprite):
         self.speed =  500
 
         # collisons
-        self.hitbox = self.rect.inflate(0,-self.rect.height/2)
+        self.hitBox = self.rect.inflate(0,-self.rect.height/2) 
 
         #attacking
         self.attacking =False
@@ -113,23 +113,23 @@ class Entity(pg.sprite.Sprite):
     def checkColisions(self,dir):#Colistions between player and objects
         
         for sprite in self.game.solidObjects.sprites():
-            if sprite.hitBox.colliderect(self.hitbox):
+            if sprite.hitBox.colliderect(self.hitBox):
                 if dir == "horizontal":
                     if self.dir.x > 0:#Player is moving right
-                        self.hitbox.right = sprite.hitBox.left
+                        self.hitBox.right = sprite.hitBox.left
                     if self.dir.x < 0:#Player is moving left
                         
-                        self.hitbox.left = sprite.hitBox.right
-                    self.rect.centerx = self.hitbox.centerx
-                    self.pos.x = self.hitbox.centerx
+                        self.hitBox.left = sprite.hitBox.right
+                    self.rect.centerx = self.hitBox.centerx
+                    self.pos.x = self.hitBox.centerx
 
                 else:
                     if self.dir.y > 0:#Player is moving down
-                        self.hitbox.bottom = sprite.hitBox.top
+                        self.hitBox.bottom = sprite.hitBox.top
                     elif self.dir.y <0:#Player is moving up  ########### look at the indent Level your doen ccolisions works just fine but i dont think it is posable to be moving down and up at the same time ########### 
-                            self.hitbox.top = sprite.hitBox.bottom
-                    self.rect.centery = self.hitbox.centery
-                    self.pos.y = self.hitbox.centery
+                            self.hitBox.top = sprite.hitBox.bottom
+                    self.rect.centery = self.hitBox.centery
+                    self.pos.y = self.hitBox.centery
     
 
     def move(self,dt):
@@ -140,8 +140,8 @@ class Entity(pg.sprite.Sprite):
 
         #Horizontal Movement============================
         self.pos.x += self.dir.x * self.speed *dt
-        self.hitbox.centerx = round(self.pos.x)
-        self.rect.centerx = self.hitbox.centerx
+        self.hitBox.centerx = round(self.pos.x)
+        self.rect.centerx = self.hitBox.centerx
         #===============================================
 
         #Horizontal Collisions==========================
@@ -150,8 +150,8 @@ class Entity(pg.sprite.Sprite):
 
         #Vertical Movement============================
         self.pos.y += self.dir.y * self.speed *dt
-        self.hitbox.centery = round(self.pos.y)
-        self.rect.centery = self.hitbox.centery
+        self.hitBox.centery = round(self.pos.y)
+        self.rect.centery = self.hitBox.centery
         #===============================================
 
         #Vertical Collisions==========================
@@ -164,6 +164,7 @@ class Entity(pg.sprite.Sprite):
             self.frameIndex = 0
         self.image = curAnitmation[int(self.frameIndex)]
         self.mask = pg.mask.from_surface(self.image)
+
     
     def flash(self,color= white):
         if not self.canBeOuch:

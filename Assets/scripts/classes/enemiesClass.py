@@ -60,9 +60,13 @@ class BadBoy():
         BarWidth = 100
         fillAmount = int(BarWidth*(self.curHP/100))
         startX =  (self.rect.width / 2)-BarWidth/2
-        self.healthBar = pg.Rect(startX,0,fillAmount,BarHeight)
-        self.outline = pg.Rect(startX,0,BarWidth,BarHeight)
-        self.bgRect = pg.Rect(startX,0,BarWidth,BarHeight)
+        if self.scale !=1 :
+            startY = (self.rect.height / 2)-BarHeight*self.scale -10
+        else:
+            startY = 0
+        self.healthBar = pg.Rect(startX,startY,fillAmount,BarHeight)
+        self.outline = pg.Rect(startX,startY,BarWidth,BarHeight)
+        self.bgRect = pg.Rect(startX,startY,BarWidth,BarHeight)
         if self.curHP <100:
             pg.draw.rect(self.image,niceGray,self.bgRect)
             pg.draw.rect(self.image,color,self.healthBar)
@@ -73,13 +77,15 @@ class BadBoy():
         self.kill()
 
 
+    
+
 class Coffin(Entity,BadBoy):
-    def __init__(self, pos, groups, imgPath, game):
-        super(Coffin,self).__init__(pos, groups, imgPath, game)
+    def __init__(self, pos, groups, imgPath, game,scale = 1):
+        super(Coffin,self).__init__(pos, groups, imgPath, game,scale=scale)
         self.target = self.game.player
         self.agroRadius = 600
         self.moveRadius = 500
-        self.attackRadius = 50
+        self.attackRadius = 50*self.scale
         self.speed = 110
         self.game = game
     
@@ -118,16 +124,79 @@ class Coffin(Entity,BadBoy):
         super(Coffin,self).animate(dt)
         if int(self.frameIndex) == 3 and self.attacking:
             if dist <= self.attackRadius:
+                print('this')
                 damage = random.randint(5,10)
                 self.target.takeDamage(damage)
                 if self.target != self.game.player:
                     self.target.target = self
-        if self.attacking and self.frameIndex >= len(self.animaions)-1:
+        if self.attacking and self.frameIndex >= len(self.animaions[self.status])-1:
             self.attacking = False
 
+class Witch(Entity,BadBoy):
+    def __init__(self, pos, groups, imgPath, game,scale = 1):
+        super(Witch,self).__init__(pos, groups, imgPath, game,scale=scale)
+        self.target = self.game.player
+        self.agroRadius = 800
+        self.moveRadius = 500
+        self.attackRadius =350
+        self.speed = 110
+        self.game = game
+        self.bulletShot = False
+    
+    def update(self,dt):
+        self.facePlayer()
+        self.imComing()
+        
+        if not self.attacking:
+            self.move(dt)
+        self.attack()
+        self.animate(dt)
+        self.flash()
+        self.drawHealthBar()
+        self.ouchTimer()
+        self.checkHealth()
+        if self.target.curHP <=0 and self.target != self.game.player:
+                self.target = self.game.player
+        
+    def takeDamage(self,ammount = 10):
+        if self.canBeOuch:
+            self.curHP -= ammount
+            self.canBeOuch = False
+            self.hitTime = pg.time.get_ticks()
+           
+       
+    def attack(self):
+        dist, dir = self.tellMeWherePlayer()
+        if dist < self.attackRadius and not self.attacking:
+            self.attacking = True
+            self.frameIndex = 0
+        if self.attacking:
+            
+            self.status = self.status.split("_")[0]+"_attack"
+    
+    def animate(self, dt):
+        dist , dir = self.tellMeWherePlayer()
+        super(Witch,self).animate(dt)
+        if int(self.frameIndex) == 10 and self.attacking:
+            if dist <= self.attackRadius:
+                if dist < 40:
+                    self.target.takeDamage(random.randint(5,10))
+                else:
+                    bulletStartPos = self.rect.center + dir *150
+                    print(self.bulletShot)
+                    if not self.bulletShot:
+                        self.game.spawnFireBall(bulletStartPos,dir,self)
+                        self.bulletShot = True
+        if self.attacking and self.frameIndex >= len(self.animaions[self.status])-1:
+            
+            self.frameIndex = 0
+            self.status = self.status.split("_")[0]
+            self.attacking = False
+    
+
 class Cactus(Entity,BadBoy):
-    def __init__(self, pos, groups, imgPath, game):
-        super(Cactus,self).__init__(pos, groups, imgPath, game)
+    def __init__(self, pos, groups, imgPath, game,scale:int = 1):
+        super(Cactus,self).__init__(pos, groups, imgPath, game,scale=scale)
         self.target = self.game.player
         self.agroRadius = 800
         self.moveRadius = 550

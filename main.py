@@ -11,4 +11,5 @@ def  main():
             break
     pg.quit() 
 if __name__ == '__main__': 
-    main()
+    main()  
+# Duplicate Witch Attack animations to match 10 frame 3 3 more time and frame 0 2 more times

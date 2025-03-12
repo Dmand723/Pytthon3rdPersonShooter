@@ -3,8 +3,8 @@ from Assets.scripts.classes.playerClass import Player
 from Assets.scripts.classes.spriteGroups import AllSprites
 from Assets.scripts.classes.baseSprite import BaseSprite,invisObj ,Entity,TransportDoor
 from pytmx.util_pygame import load_pygame
-from Assets.scripts.classes.bulletClass import Bullet
-from Assets.scripts.classes.enemiesClass import Coffin,Cactus
+from Assets.scripts.classes.bulletClass import Bullet, FireBall
+from Assets.scripts.classes.enemiesClass import Coffin,Cactus,Witch
 
 class Game(object):
     def __init__(self):
@@ -171,6 +171,9 @@ class Game(object):
                     Coffin((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["coffin"],self)
                 if Ent.name == "Cactus":
                     Cactus((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["cactus"],self)
+                if Ent.name == 'WitchDoc':
+                    Witch((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["witchDoc"],self)
+                    
                 if Ent.name == 'TrapDoor':
                     surf1 = pg.transform.scale(Ent.image,(Ent.width,Ent.height))
                     surf2 = pg.image.load(os.path.join(PATHS['tilesets'],Ent.img2))
@@ -199,6 +202,9 @@ class Game(object):
                     Coffin((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["coffin"],self)
                 if Ent.name == "Cactus":
                     Cactus((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["cactus"],self)
+                if Ent.name == 'WitchDoc':
+                    self.witch = Coffin((Ent.x, Ent.y), (self.all_sprites, self.enemies, self.coffinGroup), PATHS["witchDoc"], self, scale=1, debug=True)
+                    self.witch.debug = True
                 if Ent.name == 'TrapDoor':
                     surf1 = pg.transform.scale(Ent.image,(Ent.width,Ent.height))
                     surf2 = pg.image.load(os.path.join(PATHS['tilesets'],Ent.img2))
@@ -251,20 +257,28 @@ class Game(object):
         self.player = Player((self.curPlayerSpawn.x,self.curPlayerSpawn.y),(self.players,self.all_sprites),os.path.join(spritesDir,"player"),self,debug=True) 
 
     def checkBulletCol(self):
-        pg.sprite.groupcollide(self.bulletsGroup,self.solidObjects,True,False) #Coll between bullets and solid objects
+        bullethit = pg.sprite.groupcollide(self.bulletsGroup,self.solidObjects,False,False) #Coll between bullets and solid objects
+        if bullethit:
+            for hit in bullethit:
+                hit.die()
         hits2 = pg.sprite.groupcollide(self.bulletsGroup,self.enemies,False,False,pg.sprite.collide_mask)#Coll between enimies and bullets
-        hits = pg.sprite.groupcollide(self.enemies,self.bulletsGroup,False,True,pg.sprite.collide_mask) # Coll between bullets and enemies 
+        if hits2:
+            for bul in hits2:
+                bul.die()
+        hits = pg.sprite.groupcollide(self.enemies,self.bulletsGroup,False,False,pg.sprite.collide_mask) # Coll between bullets and enemies 
        
         if hits2:
             for bullet in hits2:
                 if hits:
                     for hit in hits:
 
-                        hit.takeDamage(101)#change this back to  random.randint(10,25)
+                        hit.takeDamage(random.randint(10,25))#change this back to  
                         hit.target = bullet.owner
                     
-        playerHits = pg.sprite.groupcollide(self.players,self.bulletsGroup,False,True,pg.sprite.collide_mask)#Coll between players and bullets
+        playerHits = pg.sprite.groupcollide(self.bulletsGroup,self.players,False,False,pg.sprite.collide_mask)#Coll between players and bullets
         if playerHits:
+            for bul in playerHits:
+                bul.die()
             self.player.takeDamage(random.randint(10,15))
     
     def checkTransportCol(self):
@@ -287,6 +301,9 @@ class Game(object):
 
     def spawnBullet(self,pos,dir,owner):
         Bullet(pos,dir,self.bulletSurf,(self.all_sprites,self.bulletsGroup),owner)
+
+    def spawnFireBall(self,pos,dir,owner):
+        FireBall(pos,dir,self.bulletSurf,(self.all_sprites,self.bulletsGroup),owner)
 
     def checkEnemiesDead(self):
         if len(self.enemies) == 0:
