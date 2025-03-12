@@ -15,7 +15,7 @@
    cd pewpew
    ```
 
-## How to Install Required Packages
+## Install Required Packages
 
 1. Ensure you have Python installed. You can download it from [python.org](https://www.python.org/).
 2. Install the required packages using pip:
