@@ -54,29 +54,30 @@ class Player(Entity):
         keys = pg.key.get_pressed()
 
         #Movement=========================================================================
-        #Left and right-------------------------------------------------------------------
-        if keys[pg.K_LEFT] or keys[pg.K_a]:#Moving left
-           self.dir.x = -1
-           self.status = "left"
-        elif keys[pg.K_RIGHT] or keys[pg.K_d]:#Moving right
-            self.dir.x = 1
-            self.status = "right"
-        else:# Not moving left or right 
-            self.dir.x = 0
-        #Up and down---------------------------------------------------------------------- 
-        if keys[pg.K_UP] or keys[pg.K_w]:#up
-            self.dir.y = -1
-            self.status = "up"
-        elif keys[pg.K_DOWN] or keys[pg.K_s]:#down
-           self.dir.y = 1
-           self.status = "down"
-        else:# Not moving up or down
-            self.dir.y =0
-        #Sprinting-----------------------------------------------------------------------
-        if keys[pg.K_LSHIFT] and (self.dir.x !=0 or self.dir.y !=0) and self.stanima > 0:
-            self.sprinting = True
-        else:
-            self.sprinting = False
+        if not self.attacking:
+            #Left and right-------------------------------------------------------------------
+            if keys[pg.K_LEFT] or keys[pg.K_a]:#Moving left
+               self.dir.x = -1
+               self.status = "left"
+            elif keys[pg.K_RIGHT] or keys[pg.K_d]:#Moving right
+                self.dir.x = 1
+                self.status = "right"
+            else:# Not moving left or right 
+                self.dir.x = 0
+            #Up and down---------------------------------------------------------------------- 
+            if keys[pg.K_UP] or keys[pg.K_w]:#up
+                self.dir.y = -1
+                self.status = "up"
+            elif keys[pg.K_DOWN] or keys[pg.K_s]:#down
+               self.dir.y = 1
+               self.status = "down"
+            else:# Not moving up or down
+                self.dir.y =0
+            #Sprinting-----------------------------------------------------------------------
+            if keys[pg.K_LSHIFT] and (self.dir.x !=0 or self.dir.y !=0) and self.stanima > 0:
+                self.sprinting = True
+            else:
+                self.sprinting = False
         #================================================================================
 
         #Shooting========================================================================
@@ -86,17 +87,7 @@ class Player(Entity):
                 self.attacking = True
                 self.frameIndex = 0
 
-                self.bulletDir = self.tellMeWhereMouse()
-                # match self.status.split("_")[0]:
-                #     case "left":
-                #         self.bulletDir = vec(-1,0)
-                #     case "right":
-                #         self.bulletDir = vec(1,0)
-                #     case "up":
-                #         self.bulletDir = vec(0,-1)
-                #     case "down":
-                #         self.bulletDir = vec(0,1)
-    
+                self.bulletDir, dist = self.tellMeWhereMouse()
         if keys[pg.K_r]:
             self.reaload()
         #================================================================================
@@ -115,7 +106,7 @@ class Player(Entity):
         else:
             dir = vec()
 
-        return -dir
+        return -dir, distanceToPlayer
         
 
     def reaload(self):
