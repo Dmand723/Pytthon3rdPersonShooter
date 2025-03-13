@@ -21,6 +21,7 @@ pink = (255, 0, 255)
 lilac = (230,215,255)
 transparent = (0,0,0,0)
 niceGray = (69,69,69)
+grassGreen = (160,215,128,255)
 
 SWIDTH = 800
 SHEIGHT = 1000

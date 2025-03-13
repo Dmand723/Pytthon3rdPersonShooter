@@ -395,8 +395,9 @@ class Game(object):
             self.draw()
 
     def start_screen(self):
-        self.window.fill(black)
-        draw_text(self.window, TITLE, 150, WIDTH / 2, HEIGHT / 4,  green, "impact")
+        bg = pg.image.load(PATHS['other']+ '/startScreen.png')
+        self.window.fill(grassGreen)
+        draw_text(self.window, TITLE, 150, WIDTH / 2, HEIGHT / 4,  niceGray, "impact")
         pg.display.flip()
         waiting = True
         while waiting:
@@ -411,6 +412,7 @@ class Game(object):
 
     def end_screen(self):
         self.window.fill(black)
+        
         draw_text(self.window, "GameOver", 150, WIDTH / 2, HEIGHT / 4,red, "impact")
         draw_text(self.window, "yould you like to play again (Y/N)?", 75, WIDTH / 2, HEIGHT / 4+200,green, "impact")
         pg.display.flip()
