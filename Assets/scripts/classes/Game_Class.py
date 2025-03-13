@@ -264,9 +264,6 @@ class Game(object):
             for hit in bullethit:
                 hit.die()
         hits2 = pg.sprite.groupcollide(self.bulletsGroup,self.enemies,False,False,pg.sprite.collide_mask)#Coll between enimies and bullets
-        if hits2:
-            for bul in hits2:
-                bul.die()
         hits = pg.sprite.groupcollide(self.enemies,self.bulletsGroup,False,False,pg.sprite.collide_mask) # Coll between bullets and enemies 
        
         if hits2:
@@ -276,6 +273,7 @@ class Game(object):
 
                         hit.takeDamage(random.randint(10,25))#change this back to  
                         hit.target = bullet.owner
+                bullet.die()
                     
         playerHits = pg.sprite.groupcollide(self.bulletsGroup,self.players,False,False,pg.sprite.collide_mask)#Coll between players and bullets
         if playerHits:
