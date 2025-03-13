@@ -5,7 +5,7 @@ import pyautogui
 import sys
 import math
 from pygame.math import Vector2 as vec
-
+sys.dont_write_bytecode = True
 
 # Colors
 white = (255,255,255)
