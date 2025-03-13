@@ -650,10 +650,10 @@
   <object id="170" name="Wall" x="4131" y="1598" width="28" height="125"/>
   <object id="171" name="Wall" x="4163" y="1664" width="221" height="67"/>
   <object id="172" name="Wall" x="4388" y="1666" width="24" height="699"/>
-  <object id="173" name="Wall" x="2511" y="1686" width="128" height="196"/>
-  <object id="175" name="Wall" x="2322" y="1597" width="760" height="88"/>
+  <object id="173" name="Wall" x="2511" y="1686" width="85" height="140"/>
+  <object id="175" name="Wall" x="2322" y="1597" width="760" height="60"/>
   <object id="176" name="Wall" x="2326" y="1688" width="181" height="133"/>
-  <object id="177" name="Wall" x="2766" y="1689" width="128" height="193"/>
+  <object id="177" name="Wall" x="2819" y="1687" width="76" height="139"/>
   <object id="180" name="Wall" x="2897" y="1687" width="189" height="134"/>
   <object id="182" name="HB" x="2299.83" y="2252.17" width="140.333" height="115.667"/>
   <object id="183" name="HB" x="2363.83" y="3344.17" width="140.333" height="115.667"/>

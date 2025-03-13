@@ -73,7 +73,6 @@ class BadBoy():
             pg.draw.rect(self.image,black,self.outline,3)
     
     def die(self):
-        self.game
         self.kill()
 
 
@@ -85,7 +84,7 @@ class Coffin(Entity,BadBoy):
         self.target = self.game.player
         self.agroRadius = 600
         self.moveRadius = 500
-        self.attackRadius = 50*self.scale
+        self.attackRadius = 70*self.scale
         self.speed = 110
         self.game = game
     
@@ -131,6 +130,8 @@ class Coffin(Entity,BadBoy):
                     self.target.target = self
         if self.attacking and self.frameIndex >= len(self.animaions[self.status])-1:
             self.attacking = False
+    
+    
 
 class Witch(Entity,BadBoy):
     def __init__(self, pos, groups, imgPath, game,scale = 1):

@@ -103,6 +103,7 @@ class Entity(pg.sprite.Sprite):
             if len(self.game.enemies) ==1:
                 self.game.lastEnemyPos = self.pos 
             self.die()
+    
         
 
         
