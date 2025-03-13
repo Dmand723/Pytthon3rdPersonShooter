@@ -24,8 +24,9 @@ class Bullet(BaseSprite):
         self.owner.bulletShot = False
         self.kill()
 class FireBall(BaseSprite):
-    def __init__(self, pos,dir, surface, groups,owner):
-        super(FireBall,self).__init__(pos, surface, groups)
+    def __init__(self, pos,dir, groups,owner):
+        self.surf = pg.image.load(PATHS['other']+ '/fireball.png')
+        super(FireBall,self).__init__(pos, self.surf, groups)
         self.pos = vec(self.rect.center)
         self.drift = random.uniform(-.05,.05)
         self.dir = dir

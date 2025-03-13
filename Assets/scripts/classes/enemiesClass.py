@@ -124,7 +124,7 @@ class Coffin(Entity,BadBoy):
         super(Coffin,self).animate(dt)
         if int(self.frameIndex) == 3 and self.attacking:
             if dist <= self.attackRadius:
-                print('this')
+                
                 damage = random.randint(5,10)
                 self.target.takeDamage(damage)
                 if self.target != self.game.player:
@@ -171,7 +171,6 @@ class Witch(Entity,BadBoy):
             self.attacking = True
             self.frameIndex = 0
         if self.attacking:
-            
             self.status = self.status.split("_")[0]+"_attack"
     
     def animate(self, dt):
@@ -183,7 +182,7 @@ class Witch(Entity,BadBoy):
                     self.target.takeDamage(random.randint(5,10))
                 else:
                     bulletStartPos = self.rect.center + dir *150
-                    print(self.bulletShot)
+                    
                     if not self.bulletShot:
                         self.game.spawnFireBall(bulletStartPos,dir,self)
                         self.bulletShot = True
@@ -192,6 +191,7 @@ class Witch(Entity,BadBoy):
             self.frameIndex = 0
             self.status = self.status.split("_")[0]
             self.attacking = False
+            self.bulletShot = False
     
 
 class Cactus(Entity,BadBoy):

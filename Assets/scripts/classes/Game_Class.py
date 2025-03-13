@@ -320,7 +320,7 @@ class Game(object):
         Bullet(pos,dir,self.bulletSurf,(self.all_sprites,self.bulletsGroup),owner)
 
     def spawnFireBall(self,pos,dir,owner):
-        FireBall(pos,dir,self.bulletSurf,(self.all_sprites,self.bulletsGroup),owner)
+        FireBall(pos,dir,(self.all_sprites,self.bulletsGroup),owner)
 
     def checkEnemiesDead(self):
         if len(self.enemies) == 0:
