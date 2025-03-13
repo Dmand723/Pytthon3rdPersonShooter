@@ -10,6 +10,17 @@ class BaseSprite(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = pos)
         self.hitBox = self.rect.inflate(0,-self.rect.height/3)
 
+class MouseSprite(BaseSprite):
+    def __init__(self, pos, surface, groups,game):
+        super().__init__(pos, surface, groups)
+        self.game = game
+        self.rect = self.image.get_rect()
+
+    def update(self,dt):
+        self.rect.center = pg.mouse.get_pos()
+        self.rect.centerx += self.game.all_sprites.offset.x
+        self.rect.centery += self.game.all_sprites.offset.y
+
 class TransportDoor(BaseSprite):
     def __init__(self, pos, mainImg,openImg, groups,name,goto:str = '1',fromScene:str = '0',isOpen:bool = False):
         super().__init__(pos, mainImg, groups)

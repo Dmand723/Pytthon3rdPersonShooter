@@ -1,10 +1,11 @@
 from Assets.scripts.settings import *
 from Assets.scripts.classes.playerClass import Player
 from Assets.scripts.classes.spriteGroups import AllSprites
-from Assets.scripts.classes.baseSprite import BaseSprite,invisObj ,Entity,TransportDoor
+from Assets.scripts.classes.baseSprite import BaseSprite,invisObj ,Entity,TransportDoor,MouseSprite
 from pytmx.util_pygame import load_pygame
 from Assets.scripts.classes.bulletClass import Bullet, FireBall
 from Assets.scripts.classes.enemiesClass import Coffin,Cactus,Witch
+
 
 class Game(object):
     def __init__(self):
@@ -15,6 +16,7 @@ class Game(object):
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.players = pg.sprite.Group()
+        self.mouseSprite = pg.sprite.Group()
         self.all_sprites = AllSprites()
         self.spritesBelowPlayer = pg.sprite.Group()
         self.solidObjects = pg.sprite.Group()
@@ -44,7 +46,12 @@ class Game(object):
 
         self.curPlayerSpawn = vec()
         self.player = None
+        
         self.gameSetup()
+        pg.mouse.set_visible(False)
+        self.mousePos = pg.mouse.get_pos()
+        self.mouse = MouseSprite((0,0),self.mouseImg,(self.all_sprites,self.mouseSprite),self)
+        
 
     def get_events(self):
         events = pg.event.get()
@@ -86,6 +93,12 @@ class Game(object):
         self.checkBulletCol()
         
         self.checkTransportCol()
+        # self.mousePos = vec(pg.mouse.get_pos())
+        # self.mousePos.x = self.mousePos.x+WIDTH
+        # self.mousePos.y = self.mousePos.y+HEIGHT
+        # self.mouse.rect.center = self.mousePos
+        # print(self.mousePos,"Mouse")
+        # print(self.player.pos,'Player')
 
 
            
@@ -132,6 +145,7 @@ class Game(object):
         # self.tmx_map4_data = load_pygame(self.levelPaths[3])
         
         self.bulletSurf = pg.image.load(PATHS['other']+'/particle.png').convert_alpha()
+        self.mouseImg = pg.image.load(PATHS['other']+'/crosshair.png')
         
         self.bulletImg = pg.image.load(os.path.join(PATHS['other'],"bullet.png")).convert_alpha()
         self.bulletImgMini = pg.transform.scale(self.bulletImg,(30,30))
@@ -278,8 +292,10 @@ class Game(object):
         playerHits = pg.sprite.groupcollide(self.bulletsGroup,self.players,False,False,pg.sprite.collide_mask)#Coll between players and bullets
         if playerHits:
             for bul in playerHits:
-                bul.die()
-            self.player.takeDamage(random.randint(10,15))
+                if bul.owner != self.player:
+                    self.player.takeDamage(random.randint(10,15))
+                    bul.die()
+           
     
     def checkTransportCol(self):
         boundsHit = pg.sprite.groupcollide(self.transports,self.players,False,False) # Coll between player and transports

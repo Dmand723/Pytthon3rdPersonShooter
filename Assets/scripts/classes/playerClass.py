@@ -78,15 +78,16 @@ class Player(Entity):
                 self.attacking = True
                 self.frameIndex = 0
 
-                match self.status.split("_")[0]:
-                    case "left":
-                        self.bulletDir = vec(-1,0)
-                    case "right":
-                        self.bulletDir = vec(1,0)
-                    case "up":
-                        self.bulletDir = vec(0,-1)
-                    case "down":
-                        self.bulletDir = vec(0,1)
+                self.bulletDir = self.tellMeWhereMouse()
+                # match self.status.split("_")[0]:
+                #     case "left":
+                #         self.bulletDir = vec(-1,0)
+                #     case "right":
+                #         self.bulletDir = vec(1,0)
+                #     case "up":
+                #         self.bulletDir = vec(0,-1)
+                #     case "down":
+                #         self.bulletDir = vec(0,1)
     
         if keys[pg.K_r]:
             self.reaload()
@@ -97,7 +98,16 @@ class Player(Entity):
 
         #====================================================
     
-   
+    def tellMeWhereMouse(self):
+        mousePos = vec(self.game.mouse.rect.center)
+        playerPos = vec(self.rect.center)
+        distanceToPlayer = (playerPos - mousePos).magnitude()
+        if distanceToPlayer != 0:
+            dir = (playerPos-mousePos).normalize()
+        else:
+            dir = vec()
+
+        return -dir
         
 
     def reaload(self):
