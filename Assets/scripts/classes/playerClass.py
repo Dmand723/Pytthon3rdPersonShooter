@@ -88,6 +88,7 @@ class Player(Entity):
                 self.frameIndex = 0
 
                 self.bulletDir, dist = self.tellMeWhereMouse()
+                self.faceCrosshair()
         if keys[pg.K_r]:
             self.reaload()
         #================================================================================
@@ -107,7 +108,19 @@ class Player(Entity):
             dir = vec()
 
         return -dir, distanceToPlayer
-        
+    
+    def faceCrosshair(self):
+        dir, dist =self.tellMeWhereMouse()
+        if -0.5<dir.y<0.5:
+            if dir.x <0: #Crosshair is to the left
+                self.status = "left"
+            elif dir.x > 0: #Crosshair is on the right 
+                self.status = "right"
+        else:
+            if dir.y <0:#Crosshair is up
+                self.status = "up"
+            elif dir.y>0:#Crosshair is down 
+                self.status = "down"
 
     def reaload(self):
         self.ammo = self.maxAmmo
