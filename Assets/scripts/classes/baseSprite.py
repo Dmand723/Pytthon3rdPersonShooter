@@ -54,7 +54,7 @@ class invisObj(pg.sprite.Sprite):
             self.image.fill((0, 0, 255))  
 
 class Entity(pg.sprite.Sprite):
-    def __init__(self, pos,groups,imgPath,game,debug:bool = False,status:str = 'down_idle',scale:int = 1):
+    def __init__(self, pos,groups,imgPath,game,debug:bool = False,status:str = 'down_idle',scale:int = 1,speed:int=500):
         super(Entity,self).__init__(groups)
         self.game = game
         self.scale = scale
@@ -68,7 +68,7 @@ class Entity(pg.sprite.Sprite):
         #movement
         self.pos = vec(self.rect.center)
         self.dir = vec()
-        self.speed =  500
+        self.speed =  speed
 
         # collisons
         self.hitBox = self.rect.inflate(0,-self.rect.height/2) 

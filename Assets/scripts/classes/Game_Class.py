@@ -119,8 +119,9 @@ class Game(object):
         self.window.fill(black)
         self.all_sprites.customDraw(self.player,self.spritesBelowPlayer)
        
-        self.DrawBarHoriz(self.window,(25,50),self.player.curHP,250,red,"HP")
-        self.drawDataImg((25,90),self.bulletImgMini,self.player.ammo)
+        self.hpBar = self.DrawBarHoriz(self.window,(25,50),self.player.curHP,250,red,"HP")
+        self.stanimaBar = self.DrawBarHoriz(self.window,(25,110),self.player.stanima,250,blue,'Stanima')
+        self.ammoBar = self.drawDataImg((25,150),self.bulletImgMini,self.player.ammo)
 
         if self.player.ammo == 0:
             draw_text(self.window,'Press R to reload',30,center_x,center_x)

@@ -4,25 +4,27 @@ from Assets.scripts.classes.baseSprite import Entity
 
 class Player(Entity):
     def __init__(self,pos,groups,imgPath,game,debug:bool = False,):
-        super(Player,self).__init__(pos,groups,imgPath,game,debug)
+        self.normalSpeed = 350
+        self.sprintSpeed = 550
+        super(Player,self).__init__(pos,groups,imgPath,game,debug,speed=self.normalSpeed)
 
         # attack
         self.bulletDir = vec(1,0)
         self.didShoot = False
 
-        self.normalSpeed = 250
-        self.sprintSpeed = 300
+       
 
-        self.curSpeed = self.normalSpeed
         self.maxAmmo = 6
         self.ammo = self.maxAmmo
 
         self.invetory = {}
 
         
-
+        self.maxStanima = 100
         self.stanima = 100
         self.sprinting = False
+        self.stanimaRegenCooldown = 70
+        self.stanimaCooldownTimer = 0
 
         #debug 
         self.godmode = False
@@ -69,6 +71,10 @@ class Player(Entity):
            self.status = "down"
         else:
             self.dir.y =0
+        if keys[pg.K_LSHIFT] and (self.dir.x !=0 or self.dir.y !=0) and self.stanima > 0:
+            self.sprinting = True
+        else:
+            self.sprinting = False
         #====================================================
 
         #Shooting============================================
@@ -124,6 +130,24 @@ class Player(Entity):
         self.checkHealth()
         if self.godmode and self.curHP < self.maxHP:
             self.curHP = self.maxHP
+        
+        #Sprinting
+        if self.sprinting:
+            
+            self.stanima -=1
+            if self.stanima > 0:
+                self.stanimaCooldownTimer = self.stanimaRegenCooldown
+                self.speed = self.sprintSpeed
+            else: 
+                self.speed = self.normalSpeed
+        else:
+            self.speed =self.normalSpeed
+            if self.stanima < self.maxStanima and self.stanimaCooldownTimer ==0:
+                self.stanima +=1
+            elif self.stanimaCooldownTimer > 0:
+                self.stanimaCooldownTimer -=1
+            
+        
         
     def die(self):
         self.game.clearGroups()
