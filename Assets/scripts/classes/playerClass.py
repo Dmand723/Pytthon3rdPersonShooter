@@ -53,31 +53,33 @@ class Player(Entity):
     def getInputs(self):
         keys = pg.key.get_pressed()
 
-        #movement===========================================
-        if keys[pg.K_LEFT] or keys[pg.K_a]:#left
+        #Movement=========================================================================
+        #Left and right-------------------------------------------------------------------
+        if keys[pg.K_LEFT] or keys[pg.K_a]:#Moving left
            self.dir.x = -1
            self.status = "left"
-        elif keys[pg.K_RIGHT] or keys[pg.K_d]:#right
+        elif keys[pg.K_RIGHT] or keys[pg.K_d]:#Moving right
             self.dir.x = 1
             self.status = "right"
-        else:
+        else:# Not moving left or right 
             self.dir.x = 0
-            
+        #Up and down---------------------------------------------------------------------- 
         if keys[pg.K_UP] or keys[pg.K_w]:#up
             self.dir.y = -1
             self.status = "up"
         elif keys[pg.K_DOWN] or keys[pg.K_s]:#down
            self.dir.y = 1
            self.status = "down"
-        else:
+        else:# Not moving up or down
             self.dir.y =0
+        #Sprinting-----------------------------------------------------------------------
         if keys[pg.K_LSHIFT] and (self.dir.x !=0 or self.dir.y !=0) and self.stanima > 0:
             self.sprinting = True
         else:
             self.sprinting = False
-        #====================================================
+        #================================================================================
 
-        #Shooting============================================
+        #Shooting========================================================================
         if keys[pg.K_SPACE] or pg.mouse.get_pressed()[0]:
             if not self.attacking and self.ammo > 0:
                 self.ammo -= 1
@@ -97,12 +99,12 @@ class Player(Entity):
     
         if keys[pg.K_r]:
             self.reaload()
-        #====================================================
+        #================================================================================
         
-        #Misc================================================
+        #Misc============================================================================
        
 
-        #====================================================
+        #================================================================================
     
     def tellMeWhereMouse(self):
         mousePos = vec(self.game.mouse.rect.center)
