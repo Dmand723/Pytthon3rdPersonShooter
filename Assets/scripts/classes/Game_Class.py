@@ -31,9 +31,9 @@ class Game(object):
 
         self.goto = "0"
         self.fromScene = "start"
-        self.levelPaths = ['Assets/sprites/myMaps/map.tmx',"Assets/sprites/myMaps/map2.tmx"]    
+        self.levelPaths = [PATHS['map1'],PATHS['map2']]    
         
-        self.musicPaths = ['Assets/sound/music.mp3','Assets/sound/music.mp3']
+        self.musicPaths = [PATHS['sound']+'/music.mp3',PATHS['sound']+'/music.mp3']
         
         self.keys = pg.sprite.Group()
         
@@ -75,6 +75,8 @@ class Game(object):
                         self.goto = self.trapDoor.goto
                         self.fromScene = self.trapDoor.fromScene
                         self.loadMap(int(self.goto))
+                elif event.key == pg.K_t:
+                    self.witch.flash()
 
     def update(self):
         self.dt = self.clock.tick(FPS)/1000
@@ -129,7 +131,7 @@ class Game(object):
         # self.tmx_map3_data = load_pygame(self.levelPaths[2])
         # self.tmx_map4_data = load_pygame(self.levelPaths[3])
         
-        self.bulletSurf = pg.image.load("Assets/sprites/other/particle.png").convert_alpha()
+        self.bulletSurf = pg.image.load(PATHS['other']+'/particle.png').convert_alpha()
         
         self.bulletImg = pg.image.load(os.path.join(PATHS['other'],"bullet.png")).convert_alpha()
         self.bulletImgMini = pg.transform.scale(self.bulletImg,(30,30))
@@ -172,7 +174,7 @@ class Game(object):
                 if Ent.name == "Cactus":
                     Cactus((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["cactus"],self)
                 if Ent.name == 'WitchDoc':
-                    Witch((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["witchDoc"],self)
+                    self.witch = Witch((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["witchDoc"],self)
                     
                 if Ent.name == 'TrapDoor':
                     surf1 = pg.transform.scale(Ent.image,(Ent.width,Ent.height))

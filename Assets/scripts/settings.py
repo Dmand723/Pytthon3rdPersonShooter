@@ -46,6 +46,7 @@ spritesDir = os.path.join(assetsDir,"sprites")
 
 PATHS ={"game":gameDir,
         "assets":os.path.join(gameDir,"assets"),
+        'sound':os.path.join(assetsDir,'sound'),
         "sprites":os.path.join(gameDir,"assets\sprites"),
         "maps":os.path.join(gameDir,"assets\maps"),
         "scripts":os.path.join(gameDir,"assets\scripts"),
@@ -55,6 +56,8 @@ PATHS ={"game":gameDir,
         "cactus":os.path.join(spritesDir,"monster\cactus"),
         "bullet":os.path.join(spritesDir,"bullet"),
         'tilesets':os.path.join(spritesDir,'tilesets'),
+        'map1':os.path.join(spritesDir,'myMaps/map.tmx'),
+        'map2':os.path.join(spritesDir,'myMaps/map2.tmx'),
         "other":os.path.join(spritesDir,"other")}
 
 
