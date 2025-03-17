@@ -134,8 +134,10 @@ class Player(Entity):
         self.flash()
         self.ouchTimer()
         self.checkHealth()
-        if self.godmode and self.curHP < self.maxHP:
-            self.curHP = self.maxHP
+        if self.godmode:
+            if self.curHP < self.maxHP:
+                self.curHP = self.maxHP
+            self.stanima = self.maxStanima
         
         #Sprinting
         if self.sprinting:

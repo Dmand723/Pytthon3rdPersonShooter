@@ -23,6 +23,9 @@ transparent = (0,0,0,0)
 niceGray = (69,69,69)
 grassGreen = (160,215,128,255)
 
+LIGHT_MASK = "lightMask.png"
+LIGHT_RADIUS = (600,600)
+
 SWIDTH = 800
 SHEIGHT = 1000
 WIDTH , HEIGHT= pyautogui.size()

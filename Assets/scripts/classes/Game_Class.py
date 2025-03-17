@@ -26,10 +26,12 @@ class Game(object):
         
         self.musicPaths = [PATHS['sound']+'/music.mp3',PATHS['sound']+'/music.mp3']
         
-        self.keys = pg.sprite.Group()
+        self.interactables = pg.sprite.Group()
         
         self.onkey = False
         self.trapDoorHit = False
+
+        self.onTorch = False
 
         self.interactText:str = ''
 
@@ -56,6 +58,7 @@ class Game(object):
         self.transports = pg.sprite.Group()
         self.doors = pg.sprite.Group()
         self.mapSprites = pg.sprite.Group()
+        self.spritesOnTop = pg.sprite.Group()
 
     def get_events(self):
         events = pg.event.get()
@@ -72,6 +75,9 @@ class Game(object):
                     if self.keySpawed and self.onkey:
                         self.key.kill()
                         self.player.invetory['key'] = 1 
+                    if self.onTorch:
+                        self.torch.kill()
+                        self.player.invetory['torch'] = 1
                     elif self.trapDoorHit and not self.trapDoor.isOpen:
                         try: 
                             if self.player.invetory['key'] >0:
@@ -86,8 +92,11 @@ class Game(object):
                         self.goto = self.trapDoor.goto
                         self.fromScene = self.trapDoor.fromScene
                         self.loadMap(int(self.goto))
-                elif event.key == pg.K_t:
-                    self.witch.flash()
+                elif event.key == pg.K_m:#Mute/Unmute game music
+                    if pg.mixer.music.get_volume() > 0:
+                        pg.mixer.music.set_volume(0)
+                    else:
+                        pg.mixer.music.set_volume(50)
 
     def update(self):
         self.dt = self.clock.tick(FPS)/1000
@@ -113,21 +122,35 @@ class Game(object):
             self.checkEnemiesDead()   
         elif self.keySpawed:
             self.key.animate(self.dt)
-            keyHit = pg.sprite.groupcollide(self.keys,self.players,False,False)
-            if keyHit:
-                
-                self.onkey = True
+        if len(self.interactables) != 0:
+            Hit = pg.sprite.groupcollide(self.interactables,self.players,False,False)
+            if Hit:
+                for item in Hit:
+                    if item.tag == 'key':
+                        self.onkey = True
+                    else:
+                        self.onkey = False
+                    if item.tag == 'torch':
+                        self.onTorch = True
+                    else:
+                        self.onTorch = False
             else:
                 self.onkey = False
+                self.onTorch = False
+        else:
+            self.onkey = False
+            self.onTorch = False
 
         
     def draw(self):
         self.window.fill(black)
-        self.all_sprites.customDraw(self.player,self.spritesBelowPlayer)
+        self.all_sprites.customDraw(self.player,self.spritesBelowPlayer,self.spritesOnTop)
        
         self.hpBar = self.DrawBarHoriz(self.window,(25,50),self.player.curHP,250,red,"HP")
         self.stanimaBar = self.DrawBarHoriz(self.window,(25,110),self.player.stanima,250,blue,'Stanima')
         self.ammoBar = self.drawDataImg((25,150),self.bulletImgMini,self.player.ammo)
+        if int(self.goto) ==1:
+            self.drawFog()
 
         if self.player.ammo == 0:
             draw_text(self.window,'Press R to reload',30,center_x,center_x)
@@ -138,6 +161,8 @@ class Game(object):
                 self.interactText = 'Press E to open'
         elif self.trapDoorHit and self.trapDoor.isOpen:
             self.interactText = 'Press E to enter'
+        elif self.onTorch:
+            self.interactText = "Press E to pickup torch"
         else:
             self.interactText = ''
         draw_text(self.window,self.interactText,30,center_x,center_y+60)
@@ -176,6 +201,9 @@ class Game(object):
         self.transports.empty()
         self.doors.empty()
         self.spritesBelowPlayer.empty()
+        self.spritesOnTop.empty()
+        self.damageObjs.empty()
+        self.interactables.empty()
 
     def loadMap(self,mapInt):
         self.window.fill(black)
@@ -228,6 +256,10 @@ class Game(object):
                     Cactus((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["cactus"],self)
                 if Ent.name == 'WitchDoc':
                     Witch((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["witchDoc"],self)
+                if Ent.name == "Bolder":
+                    BaseSprite((Ent.x,Ent.y),Ent.image,(self.all_sprites,self.mapSprites,self.solidObjects,self.spritesOnTop))
+                if Ent.name == "Torch":
+                    self.torch = Entity((Ent.x,Ent.y), (self.all_sprites,self.spritesBelowPlayer,self.interactables), PATHS['sprites']+"/torch",self,status='idle',scale=1,tag='torch')
                 if Ent.name == 'TrapDoor':
                     surf1 = pg.transform.scale(Ent.image,(Ent.width,Ent.height))
                     surf2 = pg.image.load(os.path.join(PATHS['tilesets'],Ent.img2))
@@ -243,7 +275,8 @@ class Game(object):
                         else:
                             self.curPlayerSpawn = vec(Ent.x,Ent.y)
                             self.spawnPlayer()
-               
+            self.createFog()
+
         # elif mapInt == 2: 
         #     for x,y,surf in self.tmx_map3_data.get_layer_by_name("Bounds").tiles():
         #         BaseSprite((x*TILE_SIZE,y*TILE_SIZE),surf,(self.all_sprites,self.solidObjects,self.mapSprites))
@@ -275,6 +308,28 @@ class Game(object):
             print("Error No Map "+mapInt)
         
         self.keySpawed = False
+
+    def createFog(self):#Creates a fog that obstructs players veiw
+        self.fog = pg.Surface((WIDTH,HEIGHT))
+        self.fog.fill(black)
+        self.light_mask = pg.image.load(PATHS["other"]+"/lightMask.png").convert_alpha()
+        self.light_mask = pg.transform.scale(self.light_mask,LIGHT_RADIUS)
+        self.light_rect = self.light_mask.get_rect()
+
+    def drawFog(self,vec =None):
+       
+
+        self.fog.fill(black)
+        try:
+            if self.player.invetory['torch'] > 0:
+                lightCenter = self.player.rect.center - self.all_sprites.getoffset()
+            else:
+                lightCenter = self.torch.rect.center - self.all_sprites.getoffset()
+        except KeyError:
+            lightCenter = self.torch.rect.center - self.all_sprites.getoffset()
+        self.light_rect.center = lightCenter
+        self.fog.blit(self.light_mask,self.light_rect)
+        self.window.blit(self.fog,(0,0),special_flags=pg.BLEND_MULT)
 
     def spawnPlayer(self):
         self.player = Player((self.curPlayerSpawn.x,self.curPlayerSpawn.y),(self.players,self.all_sprites),os.path.join(spritesDir,"player"),self,debug=True) 
@@ -337,15 +392,18 @@ class Game(object):
         FireBall(pos,dir,(self.all_sprites,self.bulletsGroup),owner)
 
     def checkEnemiesDead(self):
-        if len(self.enemies) == 0 and int(self.goto) == 0:
+        if len(self.enemies) == 0:
             self.spawnKey()
             self.keySpawed = True
 
     def spawnKey(self):
         key_position = self.lastEnemyPos
-        key_path = PATHS['sprites']+'/keys/key1'  # Load your key image
-        self.key = Entity(key_position, (self.all_sprites,self.keys), key_path,self,status='idle',scale=2) # Add the key to the appropriate groups
-        
+        key_path = PATHS['sprites']+'/keys/key'+self.goto  # Load your key image
+        if int(self.goto) == 0:
+            self.key = Entity(key_position, (self.all_sprites,self.interactables), key_path,self,status='idle',scale=2,tag='key')
+        if int(self.goto) == 1:
+            self.key = Entity(key_position, (self.all_sprites,self.interactables), key_path,self,status='idle',scale=1,tag='key')  
+
     def DrawBarHoriz(self,surf,pos,value,length,fillColor,tag="",hasTag = True):
         value = value
         if value < 0:
