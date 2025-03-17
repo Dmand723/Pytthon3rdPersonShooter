@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="13" height="12" tilewidth="64" tileheight="64" infinite="0" nextlayerid="4" nextobjectid="4">
+ <tileset firstgid="1" source="groundTiles.tsx"/>
+ <tileset firstgid="249" source="Objects.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="13" height="12">
+  <data encoding="csv">
+47,47,47,47,47,47,47,47,47,47,47,47,47,
+47,47,47,47,47,47,47,47,47,47,47,47,47,
+47,47,47,47,47,47,47,47,47,47,47,47,47,
+61,60,47,47,47,47,47,47,60,92,58,60,58,
+58,91,59,91,90,60,91,61,61,90,47,47,61,
+91,91,58,59,90,47,47,47,47,92,58,61,60,
+61,47,47,47,47,47,47,47,47,47,47,47,59,
+90,47,47,47,47,47,47,47,47,47,47,47,60,
+60,47,91,90,47,47,47,47,47,47,59,61,61,
+60,91,59,91,47,47,47,47,89,61,60,47,47,
+47,47,47,60,59,91,89,92,61,92,47,47,47,
+47,47,47,47,92,58,91,60,89,47,47,47,47
+</data>
+ </layer>
+ <objectgroup id="2" name="Object Layer 1">
+  <object id="1" gid="266" x="14.6667" y="671.667" width="800" height="628"/>
+ </objectgroup>
+ <objectgroup id="3" name="Object Layer 2">
+  <object id="3" gid="276" x="344" y="534.333" width="134" height="128"/>
+ </objectgroup>
+</map>
