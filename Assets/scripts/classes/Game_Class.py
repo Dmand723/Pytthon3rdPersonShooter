@@ -15,24 +15,13 @@ class Game(object):
         self.window = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
-        self.players = pg.sprite.Group()
-        self.mouseSprite = pg.sprite.Group()
-        self.all_sprites = AllSprites()
-        self.spritesBelowPlayer = pg.sprite.Group()
-        self.solidObjects = pg.sprite.Group()
-        self.enities = pg.sprite.Group()
-        self.enemies = pg.sprite.Group()
-        self.cactusGroup = pg.sprite.Group()
-        self.coffinGroup = pg.sprite.Group()
-        self.bulletsGroup = pg.sprite.Group()
-        self.transports = pg.sprite.Group()
-        self.doors = pg.sprite.Group()
-        self.mapSprites = pg.sprite.Group()
+        
+        self.createGroups()
 
         self.lastEnemyPos = vec()
 
         self.goto = "0"
-        self.fromScene = "start"
+        self.fromScene = "0"
         self.levelPaths = [PATHS['map1'],PATHS['map2']]    
         
         self.musicPaths = [PATHS['sound']+'/music.mp3',PATHS['sound']+'/music.mp3']
@@ -50,8 +39,23 @@ class Game(object):
         self.gameSetup()
         pg.mouse.set_visible(False)
         self.mousePos = pg.mouse.get_pos()
-        self.mouse = MouseSprite((0,0),self.mouseImg,(self.all_sprites,self.mouseSprite),self)
         
+    
+    def createGroups(self):
+        self.players = pg.sprite.Group()
+        self.mouseSprite = pg.sprite.Group()
+        self.all_sprites = AllSprites()
+        self.spritesBelowPlayer = pg.sprite.Group()
+        self.solidObjects = pg.sprite.Group()
+        self.damageObjs = pg.sprite.Group()
+        self.enities = pg.sprite.Group()
+        self.enemies = pg.sprite.Group()
+        self.cactusGroup = pg.sprite.Group()
+        self.coffinGroup = pg.sprite.Group()
+        self.bulletsGroup = pg.sprite.Group()
+        self.transports = pg.sprite.Group()
+        self.doors = pg.sprite.Group()
+        self.mapSprites = pg.sprite.Group()
 
     def get_events(self):
         events = pg.event.get()
@@ -91,6 +95,8 @@ class Game(object):
 
         #Bullet collisions
         self.checkBulletCol()
+
+        self.checkDamangeCol()
         
         self.checkTransportCol()
         # self.mousePos = vec(pg.mouse.get_pos())
@@ -155,6 +161,7 @@ class Game(object):
     def gameSetup(self):
         self.loadData()
         self.loadMap(int(self.goto)) 
+        self.player.godmode = True
         
     def clearGroups(self):
         self.players.empty()
@@ -175,6 +182,7 @@ class Game(object):
         draw_text(self.window, 'Loading. . .', 150, WIDTH / 2, HEIGHT / 4,  green, "impact")
         pg.display.flip()
         self.clearGroups()
+        self.mouse = MouseSprite((0,0),self.mouseImg,(self.all_sprites,self.mouseSprite),self)
         pg.mixer.music.load(self.musicPaths[int(self.goto)])
         pg.mixer.music.play(-1)
         if mapInt == 0:
@@ -188,14 +196,11 @@ class Game(object):
                     Coffin((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["coffin"],self)
                 if Ent.name == "Cactus":
                     Cactus((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["cactus"],self)
-                if Ent.name == 'WitchDoc':
-                    self.witch = Witch((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["witchDoc"],self)
-                    
                 if Ent.name == 'TrapDoor':
                     surf1 = pg.transform.scale(Ent.image,(Ent.width,Ent.height))
                     surf2 = pg.image.load(os.path.join(PATHS['tilesets'],Ent.img2))
                     surf2 = pg.transform.scale(surf2,(Ent.width,Ent.height))
-                    self.trapDoor = TransportDoor((Ent.x,Ent.y),surf1,surf2,(self.all_sprites,self.mapSprites,self.spritesBelowPlayer,self.doors,self.transports),Ent.name)#BaseSprite((Ent.x,Ent.y),surf1,(self.all_sprites,self.mapSprites,self.doors))
+                    self.trapDoor = TransportDoor((Ent.x,Ent.y),surf1,surf2,(self.all_sprites,self.mapSprites,self.spritesBelowPlayer,self.doors,self.transports),Ent.name)
                 if Ent.name == "Wall" or Ent.name == 'HB':
                     invisObj(Ent.x,Ent.y,Ent.width,Ent.height,(self.mapSprites,self.solidObjects),self)
                 if Ent.name == "Player":
@@ -214,19 +219,20 @@ class Game(object):
                 BaseSprite((x*TILE_SIZE,y*TILE_SIZE),surf,(self.all_sprites,self.mapSprites))
             for obj in self.tmx_map2_data.get_layer_by_name("Objects"):
                 BaseSprite((obj.x,obj.y),obj.image,(self.all_sprites,self.mapSprites))
+            for obj in self.tmx_map2_data.get_layer_by_name("Damage"):
+                BaseSprite((obj.x,obj.y),obj.image,(self.all_sprites,self.mapSprites,self.damageObjs))
             for Ent in  self.tmx_map2_data.get_layer_by_name("Entities"): 
                 if Ent.name == "Coffin":
                     Coffin((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["coffin"],self)
                 if Ent.name == "Cactus":
                     Cactus((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["cactus"],self)
                 if Ent.name == 'WitchDoc':
-                    self.witch = Coffin((Ent.x, Ent.y), (self.all_sprites, self.enemies, self.coffinGroup), PATHS["witchDoc"], self, scale=1, debug=True)
-                    self.witch.debug = True
+                    Witch((Ent.x, Ent.y),(self.all_sprites,self.enemies,self.coffinGroup),PATHS["witchDoc"],self)
                 if Ent.name == 'TrapDoor':
                     surf1 = pg.transform.scale(Ent.image,(Ent.width,Ent.height))
                     surf2 = pg.image.load(os.path.join(PATHS['tilesets'],Ent.img2))
                     surf2 = pg.transform.scale(surf2,(Ent.width,Ent.height))
-                    self.trapDoor = TransportDoor((Ent.x,Ent.y),surf1,surf2,(self.all_sprites,self.mapSprites,self.spritesBelowPlayer,self.doors,self.transports),Ent.name)#BaseSprite((Ent.x,Ent.y),surf1,(self.all_sprites,self.mapSprites,self.doors))
+                    self.trapDoor = TransportDoor((Ent.x,Ent.y),surf1,surf2,(self.all_sprites,self.mapSprites,self.spritesBelowPlayer,self.doors,self.transports),Ent.name)
                 if Ent.name == "Wall" or Ent.name == 'HB':
                     invisObj(Ent.x,Ent.y,Ent.width,Ent.height,(self.mapSprites,self.solidObjects),self)
                 if Ent.name == "Player":
@@ -286,7 +292,7 @@ class Game(object):
                 if hits:
                     for hit in hits:
 
-                        hit.takeDamage(random.randint(10,25))#change this back to  
+                        hit.takeDamage(101)#change this back to random.randint(10,25)
                         hit.target = bullet.owner
                 bullet.die()
                     
@@ -297,6 +303,14 @@ class Game(object):
                     self.player.takeDamage(random.randint(10,15))
                     bul.die()
            
+    def checkDamangeCol(self):
+        dmgHit1 = pg.sprite.groupcollide(self.players,self.damageObjs,False,False,pg.sprite.collide_mask)#Coll bettween players and damage objects
+        if dmgHit1:
+            self.player.takeDamage(random.randint(3,5))
+        dmgHit2 = pg.sprite.groupcollide(self.enemies,self.damageObjs,False,False,pg.sprite.collide_mask)#Col bettween enemies and damage objects
+        if dmgHit2:
+            for hit in dmgHit2:
+                hit.takeDamage(random.randint(3,5))
     
     def checkTransportCol(self):
         boundsHit = pg.sprite.groupcollide(self.transports,self.players,False,False) # Coll between player and transports
@@ -323,7 +337,7 @@ class Game(object):
         FireBall(pos,dir,(self.all_sprites,self.bulletsGroup),owner)
 
     def checkEnemiesDead(self):
-        if len(self.enemies) == 0:
+        if len(self.enemies) == 0 and int(self.goto) == 0:
             self.spawnKey()
             self.keySpawed = True
 
@@ -429,5 +443,3 @@ class Game(object):
                         waiting = False
                     elif event.key == pg.K_n:
                         return "quit"
-                    
-                    

@@ -3,9 +3,9 @@
  <tileset firstgid="1" source="groundTiles.tsx"/>
  <tileset firstgid="249" source="fenceTiles.tsx"/>
  <tileset firstgid="393" source="Objects.tsx"/>
- <tileset firstgid="420" source="terrain.tsx"/>
- <tileset firstgid="1444" source="trapClosed.tsx"/>
- <tileset firstgid="1445" source="trapOpen.tsx"/>
+ <tileset firstgid="421" source="terrain.tsx"/>
+ <tileset firstgid="1445" source="trapClosed.tsx"/>
+ <tileset firstgid="1446" source="trapOpen.tsx"/>
  <layer id="5" name="Ground" width="100" height="100" locked="1" offsetx="1" offsety="0">
   <data encoding="csv">
 131,130,131,130,100,130,131,130,100,99,131,130,99,131,99,130,100,99,130,100,131,99,99,131,131,99,130,100,100,131,130,100,131,131,131,130,131,99,130,130,99,130,131,131,99,130,131,99,130,99,130,130,130,130,130,100,130,99,130,99,130,100,130,100,131,131,100,100,100,100,130,131,130,100,100,131,100,131,99,99,130,131,99,130,100,100,130,99,100,130,130,131,99,99,99,130,100,131,100,130,
@@ -557,10 +557,10 @@
   <object id="277" gid="406" x="1562" y="4968" width="60" height="112"/>
   <object id="278" gid="406" x="2650" y="9976" width="60" height="112"/>
  </objectgroup>
- <objectgroup id="10" name="Entities" visible="0" locked="1">
+ <objectgroup id="10" name="Entities">
   <object id="86" name="Player" x="2696" y="1772">
    <properties>
-    <property name="fromScene" value="start"/>
+    <property name="fromScene" value="0"/>
    </properties>
    <point/>
   </object>
@@ -578,9 +578,6 @@
   </object>
   <object id="92" name="HB" x="1936.12" y="2253.15" width="93.8185" height="87.03"/>
   <object id="96" name="Cactus" x="3419.39" y="3231.52">
-   <point/>
-  </object>
-  <object id="98" name="WitchDoc" x="2782.06" y="3079.03">
    <point/>
   </object>
   <object id="99" name="Cactus" x="3076.97" y="3804.24">
