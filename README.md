@@ -1,9 +1,5 @@
 # PewPew Game
 
-## About the Game
-
-<!-- Add details about the game here -->
-
 ## How to Download the Game
 
 1. Clone the repository:
@@ -33,3 +29,11 @@
    ```sh
    python main.py
    ```
+
+## How to play the game
+
+Use WSAD to move
+
+Press and hold LShift to run
+
+Aim with mouse and use LMB or Space to shoot

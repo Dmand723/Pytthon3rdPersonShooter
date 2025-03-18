@@ -186,8 +186,7 @@ class Game(object):
     def gameSetup(self):
         self.loadData()
         self.loadMap(int(self.goto)) 
-        self.player.godmode = True
-        
+       
     def clearGroups(self):
         self.players.empty()
         self.all_sprites.empty() 
@@ -347,7 +346,7 @@ class Game(object):
                 if hits:
                     for hit in hits:
 
-                        hit.takeDamage(101)#change this back to random.randint(10,25)
+                        hit.takeDamage(random.randint(10,25))
                         hit.target = bullet.owner
                 bullet.die()
                     
