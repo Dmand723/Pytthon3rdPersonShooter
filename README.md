@@ -8,7 +8,7 @@
    ```
 2. Navigate to the project directory:
    ```sh
-   cd pewpew
+   cd Pytthon3rdPersonShooter
    ```
 
 ## Install Required Packages
