@@ -37,3 +37,7 @@ Use WSAD to move
 Press and hold LShift to run
 
 Aim with mouse and use LMB or Space to shoot
+
+You can use M to mute/unmute the game at any time in the game
+
+You can use Esc to quit the game at any time
