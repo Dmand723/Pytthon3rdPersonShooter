@@ -23,7 +23,7 @@
 
 1. Navigate to the project directory if you haven't already:
    ```sh
-   cd pewpew
+   cd Pytthon3rdPersonShooter
    ```
 2. Run the main game script:
    ```sh
